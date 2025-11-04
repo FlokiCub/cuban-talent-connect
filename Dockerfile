@@ -41,14 +41,13 @@ RUN chown -R www-data:www-data /var/www/html \
 # Instalar dependencias
 RUN composer install --no-dev --optimize-autoloader
 
-# Crear archivo .env temporal con variables básicas (NO generar key)
+# Crear archivo .env básico (sin key:generate)
 RUN echo "APP_NAME=Laravel" > .env
 RUN echo "APP_ENV=production" >> .env
 RUN echo "APP_DEBUG=false" >> .env
 
-# Configurar aplicación (sin key:generate)
+# Configurar aplicación (sin route:cache que causa problemas)
 RUN php artisan config:cache
-RUN php artisan route:cache
 RUN php artisan view:cache
 RUN php artisan storage:link
 
