@@ -31,7 +31,7 @@ RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 RUN echo "display_errors = stderr" >> /usr/local/etc/php/conf.d/errors.ini
 RUN echo "error_reporting = E_ALL" >> /usr/local/etc/php/conf.d/errors.ini
 
-# Copiar aplicación
+# Copiar aplicación (excluyendo .env por .dockerignore)
 COPY . .
 
 # Establecer permisos
@@ -41,8 +41,12 @@ RUN chown -R www-data:www-data /var/www/html \
 # Instalar dependencias
 RUN composer install --no-dev --optimize-autoloader
 
-# Configurar aplicación
-RUN php artisan key:generate --force
+# Crear archivo .env temporal con variables básicas (NO generar key)
+RUN echo "APP_NAME=Laravel" > .env
+RUN echo "APP_ENV=production" >> .env
+RUN echo "APP_DEBUG=false" >> .env
+
+# Configurar aplicación (sin key:generate)
 RUN php artisan config:cache
 RUN php artisan route:cache
 RUN php artisan view:cache
