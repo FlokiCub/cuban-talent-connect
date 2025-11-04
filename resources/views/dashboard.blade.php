@@ -96,7 +96,7 @@
                                 </div>
                             </div>
                             <div class="mt-4">
-                                <a href="{{ route('interviewer.candidates.index') }}" 
+                                <a href="{{ route('candidates.index') }}" 
                                    class="text-blue-600 hover:text-blue-800 text-sm font-semibold flex items-center">
                                     Ver todos los candidatos
                                     <i class="fas fa-arrow-right ml-2"></i>
@@ -232,7 +232,7 @@
     </span>
 </div>
                                     
-                                    <a href="{{ route('interviewer.candidate.show', $candidate) }}" 
+                                    <a href="{{ route('candidate.show', $candidate) }}" 
                                        class="inline-flex items-center px-4 py-2 bg-purple-600 text-white text-sm rounded-lg hover:bg-purple-700 transition duration-200 font-semibold">
                                         <i class="fas fa-eye mr-2"></i>
                                         Ver Perfil
@@ -445,7 +445,7 @@
                             Accede a nuestra base de datos de candidatos calificados y encuentra el talento 
                             perfecto para tu equipo hotelero.
                         </p>
-                        <a href="{{ route('interviewer.candidates.index') }}" 
+                        <a href="{{ route('candidates.index') }}" 
                            class="inline-flex items-center space-x-2 bg-white text-blue-600 px-6 py-3 rounded-xl font-semibold hover:bg-blue-50 transition duration-200">
                             <i class="fas fa-users"></i>
                             <span>Explorar Candidatos</span>

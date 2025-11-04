@@ -231,7 +231,7 @@
                     @if(auth()->user()->isInterviewer() || auth()->user()->isAdmin())
                         <a href="{{ route('dashboard') }}" 
                            class="flex items-center justify-center space-x-2 px-4 py-3 rounded-xl text-sm font-semibold transition duration-200 
-                                  {{ request()->routeIs('interviewer.dashboard') ? 'bg-green-100 text-green-700 border border-green-300' : 'text-gray-700 hover:text-green-600 hover:bg-green-50' }}">
+                                  {{ request()->routeIs('dashboard') ? 'bg-green-100 text-green-700 border border-green-300' : 'text-gray-700 hover:text-green-600 hover:bg-green-50' }}">
                             <i class="fas fa-tachometer-alt {{ request()->routeIs('dashboard') ? 'text-green-600' : 'text-green-500' }}"></i>
                             <span>Dashboard</span>
                         </a>

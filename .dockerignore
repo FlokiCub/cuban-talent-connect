@@ -1,0 +1,14 @@
+node_modules/
+.git/
+.gitignore
+README.md
+.env
+Dockerfile
+.dockerignore
+docker-compose.yml
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+.idea/
+.vscode/

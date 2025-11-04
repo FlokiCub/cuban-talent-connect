@@ -91,7 +91,7 @@
                             Revisar
                         </a>
                      
-<a href="{{ route('interviewer.candidate.show', $candidate) }}" 
+<a href="{{ route('candidate.show', $candidate) }}" 
    target="_blank"
    class="bg-gray-600 text-white px-3 py-2 rounded text-sm hover:bg-gray-700">
     Ver Perfil

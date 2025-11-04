@@ -26,6 +26,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard principal
     Route::get('/dashboard', [CandidateController::class, 'dashboard'])->name('dashboard');
     
+    
     // Perfil de usuario de Breeze
     Route::view('/profile', 'profile.edit')->name('profile.edit');
  // ==================== RUTAS PARA ENTREVISTADORES ====================
