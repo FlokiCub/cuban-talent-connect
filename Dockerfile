@@ -2,12 +2,9 @@ FROM php:8.2-apache
 
 WORKDIR /var/www/html
 
-# Instalar dependencias
+# Instalar dependencias para PostgreSQL
 RUN apt-get update && apt-get install -y \
-    build-essential \
     libpng-dev \
-    libjpeg-dev \
-    libfreetype6-dev \
     libonig-dev \
     libxml2-dev \
     libpq-dev \
@@ -16,11 +13,7 @@ RUN apt-get update && apt-get install -y \
     git \
     curl
 
-# Limpiar cache
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Instalar extensiones PHP
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg
+# Instalar extensiones PHP con PostgreSQL
 RUN docker-php-ext-install pdo pdo_pgsql pgsql mbstring exif pcntl bcmath gd
 
 # Instalar Composer
@@ -34,9 +27,9 @@ ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-# Mostrar errores de PHP en logs
-RUN echo "display_errors = stderr" >> /usr/local/etc/php/conf.d/error-logging.ini
-RUN echo "log_errors = On" >> /usr/local/etc/php/conf.d/error-logging.ini
+# Mostrar errores de PHP
+RUN echo "display_errors = stderr" >> /usr/local/etc/php/conf.d/errors.ini
+RUN echo "error_reporting = E_ALL" >> /usr/local/etc/php/conf.d/errors.ini
 
 # Copiar aplicación
 COPY . .
@@ -48,14 +41,15 @@ RUN chown -R www-data:www-data /var/www/html \
 # Instalar dependencias
 RUN composer install --no-dev --optimize-autoloader
 
-# Configurar aplicación (con errores visibles)
-RUN php artisan config:clear || true
-RUN php artisan cache:clear || true
-RUN php artisan key:generate --force || true
-RUN php artisan storage:link || true
+# Configurar aplicación
+RUN php artisan key:generate --force
+RUN php artisan config:cache
+RUN php artisan route:cache
+RUN php artisan view:cache
+RUN php artisan storage:link
 
-# Solo intentar migrar si la base de datos está disponible
-RUN php artisan migrate --force || echo "Migration failed, continuing..."
+# Ejecutar migraciones
+RUN php artisan migrate --force
 
 EXPOSE 80
 
