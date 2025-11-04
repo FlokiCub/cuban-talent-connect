@@ -20,14 +20,19 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Habilitar mod_rewrite de Apache
 RUN a2enmod rewrite
 
+# Configurar Apache para usar la carpeta public
+RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
+RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/apache2.conf
+
 # Copiar archivos del proyecto
 COPY . /var/www/html
+
+WORKDIR /var/www/html
 
 # Establecer permisos
 RUN chown -R www-data:www-data /var/www/html/storage
 RUN chown -R www-data:www-data /var/www/html/bootstrap/cache
-
-WORKDIR /var/www/html
+RUN chmod -R 775 storage bootstrap/cache
 
 # Instalar dependencias de Composer
 RUN composer install --no-dev --optimize-autoloader
