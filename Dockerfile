@@ -1,8 +1,8 @@
-FROM php:8.2-apache
+FROM php:8.2-cli
 
-WORKDIR /var/www/html
+WORKDIR /app
 
-# Instalar dependencias para PostgreSQL
+# Instalar dependencias
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
@@ -13,47 +13,28 @@ RUN apt-get update && apt-get install -y \
     git \
     curl
 
-# Instalar extensiones PHP con PostgreSQL
+# Instalar extensiones PHP
 RUN docker-php-ext-install pdo pdo_pgsql pgsql mbstring exif pcntl bcmath gd
 
 # Instalar Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Habilitar mod_rewrite
-RUN a2enmod rewrite
-
-# Configurar document root de Apache
-ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
-
-# Mostrar errores de PHP
-RUN echo "display_errors = stderr" >> /usr/local/etc/php/conf.d/errors.ini
-RUN echo "error_reporting = E_ALL" >> /usr/local/etc/php/conf.d/errors.ini
-
-# Copiar aplicación (excluyendo .env por .dockerignore)
+# Copiar aplicación
 COPY . .
 
 # Establecer permisos
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 775 storage bootstrap/cache
+RUN chmod -R 775 storage bootstrap/cache
 
 # Instalar dependencias
 RUN composer install --no-dev --optimize-autoloader
 
-# Crear archivo .env básico (sin key:generate)
-RUN echo "APP_NAME=Laravel" > .env
-RUN echo "APP_ENV=production" >> .env
-RUN echo "APP_DEBUG=false" >> .env
-
-# Configurar aplicación (sin route:cache que causa problemas)
-RUN php artisan config:cache
-RUN php artisan view:cache
+# Solo comandos esenciales (sin cache que pueda causar problemas)
 RUN php artisan storage:link
 
-# Ejecutar migraciones
+# Migraciones
 RUN php artisan migrate --force
 
-EXPOSE 80
+EXPOSE 8000
 
-CMD ["apache2-foreground"]
+# Usar el servidor built-in de PHP
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
